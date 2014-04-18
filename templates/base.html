@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+{%autoescape None%}
+        {% block scripts %}
+        <script src="{{static_url('jquery-2.1.0.min.js')}}"/></script>
+        <script src="{{static_url('js/bootstrap.min.js')}}"></script>
+        <script>
+            {% for method in methods%}
+            function {{method}}({% for arg in methods[method] %}{{arg}}{% end %}){
+                var payload = {};
+                payload.{{method}} = [{% for arg in methods[method] %}{{arg}},{% end%}]
+                console.log(JSON.stringify(payload))
+                ws.send(JSON.stringify(payload));
+            }
+            {%end%}
+        </script>
+        <script>
+            var ws = new WebSocket("ws://{{uri}}/{{name}}Websocket")
+            function openWebSocket(){
+                var ws = new WebSocket("ws://{{uri}}/{{name}}Websocket")
+            }
+            ws.onmessage = function(message){
+                console.log(message)
+            }
+            var retries = 0
+            function retryOpeningWebSocket(){
+                if (retries < 2) {            
+                    setTimeout(openWebSocket, 1000);            
+                    retries++;
+                }
+            }
+		</script>
+    {%end%}
+</html>
